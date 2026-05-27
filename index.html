@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Performance Sampling Comparison | Advanced Machine Learning Sandbox</title>
+    
+    <!-- Meta Descriptions for SEO -->
+    <meta name="description" content="An interactive machine learning comparison dashboard evaluating simple random sampling without replacement (SRSWOR) and stratified sampling. Custom client-side KNN, Decision Trees, and Logistic Regression.">
+    <meta name="keywords" content="Machine Learning, SRSWOR, Stratified Sampling, Student Performance, KNN, Decision Tree, Logistic Regression">
+    
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Chart.js CDN for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fas fa-brain logo-icon"></i>
+                <span class="logo-text">SamplingML</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <li class="nav-item active" data-section="section-overview">
+                    <a href="#overview"><i class="fas fa-chart-line"></i><span>Overview</span></a>
+                </li>
+                <li class="nav-item" data-section="section-dataset">
+                    <a href="#dataset"><i class="fas fa-database"></i><span>Dataset Explorer</span></a>
+                </li>
+                <li class="nav-item" data-section="section-sampling">
+                    <a href="#sampling"><i class="fas fa-filter"></i><span>Sampling Simulator</span></a>
+                </li>
+                <li class="nav-item" data-section="section-training">
+                    <a href="#training"><i class="fas fa-sliders-h"></i><span>Training Controls</span></a>
+                </li>
+                <li class="nav-item" data-section="section-results">
+                    <a href="#results"><i class="fas fa-poll"></i><span>Results Arena</span></a>
+                </li>
+                <li class="nav-item" data-section="section-prediction">
+                    <a href="#prediction"><i class="fas fa-magic"></i><span>Inference Sandbox</span></a>
+                </li>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <p>Designed with Antigravity</p>
+                <p>v1.0.0 &copy; 2026</p>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Content -->
+        <main class="main-content">
+            
+            <!-- Global Top Bar -->
+            <header>
+                <div class="header-title">
+                    <h1 id="main-heading">Sampling Comparison Platform</h1>
+                    <p>Evaluating SRSWOR vs Stratified Splits for Student Performance Prediction</p>
+                </div>
+                <div class="header-actions">
+                    <div class="status-badge" id="lbl-training-status">
+                        <i class="fas fa-circle-notch fa-spin"></i> Initializing App
+                    </div>
+                </div>
+            </header>
+
+            <!-- Metrics Quick Dashboard Cards -->
+            <div class="metrics-grid">
+                <div class="glass-card metric-card">
+                    <div class="metric-icon blue"><i class="fas fa-users"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Population Size</span>
+                        <span class="metric-value" id="lbl-pop-size">1000</span>
+                    </div>
+                </div>
+                <div class="glass-card metric-card">
+                    <div class="metric-icon indigo"><i class="fas fa-cogs"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Active Model</span>
+                        <span class="metric-value" id="lbl-selected-model">Logistic Reg.</span>
+                    </div>
+                </div>
+                <div class="glass-card metric-card">
+                    <div class="metric-icon green"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="metric-info">
+                        <span class="metric-label">Baseline Pass Rate</span>
+                        <span class="metric-value" id="lbl-pass-rate">72.4%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 1: OVERVIEW -->
+            <section id="section-overview" class="dashboard-section active">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-info-circle"></i> Project Concept & Architecture</h2>
+                    </div>
+                    <div style="color: var(--text-secondary); display: flex; flex-direction: column; gap: 1.25rem;">
+                        <p>
+                            In supervised learning, the quality of a trained model is intimately bound to the representative quality of its training set. 
+                            If the data splits suffer from <strong>sampling bias</strong>, classification decisions can shift dramatically, creating high validation variance.
+                        </p>
+                        <p>
+                            This advanced educational platform generates a synthetic, highly correlated population of <strong>1,000 student records</strong>. 
+                            It applies two divergent sampling techniques to build test splits, fits three native Javascript classifiers, and tracks accuracy metrics side-by-side to expose the superior representative power of Stratified Splits.
+                        </p>
+                        
+                        <div class="section-grid-2" style="margin-top: 1rem; margin-bottom: 0;">
+                            <div style="background: rgba(59, 130, 246, 0.05); padding: 1.25rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(59, 130, 246, 0.15);">
+                                <h3 style="color: var(--primary); font-family: var(--font-heading); font-size: 1.05rem; margin-bottom: 0.5rem;"><i class="fas fa-dice"></i> Simple Random Sampling (SRSWOR)</h3>
+                                <p style="font-size: 0.88rem; line-height: 1.5;">
+                                    Draws random indexes from the general student population with equal probability. Because it acts without target strata preservation, smaller sub-groups (such as students with high absenteeism or those near the pass-fail boundary) are frequently under-represented, leading to classification bias.
+                                </p>
+                            </div>
+                            <div style="background: rgba(99, 102, 241, 0.05); padding: 1.25rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(99, 102, 241, 0.15);">
+                                <h3 style="color: var(--secondary); font-family: var(--font-heading); font-size: 1.05rem; margin-bottom: 0.5rem;"><i class="fas fa-layer-group"></i> Stratified Sampling</h3>
+                                <p style="font-size: 0.88rem; line-height: 1.5;">
+                                    Divides the general student population into mutually exclusive target layers (strata: Pass vs Fail). It computes their exact ratios in the parent population and draws proportional random samples from each stratum. This preserves class ratios, keeping variance low.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 1.5rem;">
+                            <button class="btn btn-primary" onclick="document.querySelector('[data-section=\'section-dataset\']').click();">
+                                <i class="fas fa-database"></i> Explore Population Dataset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: DATASET EXPLORER -->
+            <section id="section-dataset" class="dashboard-section">
+                <div class="section-grid-2">
+                    <!-- Left: Table -->
+                    <div class="glass-card" style="grid-column: 1 / span 2;">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-table"></i> Student Performance Dataset Explorer</h2>
+                            <div style="display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap;">
+                                <!-- Baseline Pass Rate Slider Control -->
+                                <div style="display: flex; align-items: center; gap: 0.65rem; background: rgba(15, 23, 42, 0.45); padding: 0.35rem 0.85rem; border-radius: 50px; border: 1px solid var(--card-border);">
+                                    <label for="slider-baseline-pass" style="font-size: 0.85rem; color: var(--text-secondary); white-space: nowrap; cursor: pointer; margin: 0;">Pass Rate:</label>
+                                    <input type="range" id="slider-baseline-pass" min="10" max="90" step="5" value="50" style="width: 80px; height: 5px; cursor: pointer; background: rgba(255,255,255,0.08); outline: none; border-radius: 3px; -webkit-appearance: none;">
+                                    <span id="bubble-baseline-pass" style="font-size: 0.85rem; color: var(--success); font-weight: 700; min-width: 35px; text-shadow: 0 0 8px rgba(16, 185, 129, 0.2);">50%</span>
+                                </div>
+                                <input type="text" id="table-search" class="form-input" placeholder="Search..." style="width: 130px; padding: 0.5rem 1rem;">
+                                <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+                                <button class="btn btn-outline" id="btn-upload-csv" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.25); color: var(--secondary);">
+                                    <i class="fas fa-file-upload"></i> Upload CSV
+                                </button>
+                                <button class="btn btn-outline" id="btn-regen-dataset" style="padding: 0.5rem 1rem; font-size: 0.85rem;">
+                                    <i class="fas fa-sync"></i> Regenerate
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Table Viewport -->
+                        <div class="table-container">
+                            <table class="custom-table" id="dataset-table" summary="A dataset showing student learning attributes and pass/fail target status.">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Study Hours</th>
+                                        <th>Attendance (%)</th>
+                                        <th>Sleep Hours</th>
+                                        <th>Assignments (%)</th>
+                                        <th>Internal Marks (%)</th>
+                                        <th>Internet Usage</th>
+                                        <th>Participation</th>
+                                        <th>Target</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataset-table-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Table Pagination controls -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem;">
+                            <span id="table-page-info" style="font-size: 0.85rem; color: var(--text-secondary);">Page 1 of 100</span>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn btn-outline" id="table-prev" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;"><i class="fas fa-chevron-left"></i> Prev</button>
+                                <button class="btn btn-outline" id="table-next" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">Next <i class="fas fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Stats Panel -->
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-calculator"></i> Population Statistics</h2>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div style="background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Average Study Hours</span>
+                            <span style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading);" id="stat-avg-study">6.2 hrs</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Average Attendance</span>
+                            <span style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading);" id="stat-avg-attendance">81%</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Avg Assignment Score</span>
+                            <span style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading);" id="stat-avg-assignments">74.5%</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Average Sleep Hours</span>
+                            <span style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading);" id="stat-avg-sleep">7.1 hrs</span>
+                        </div>
+                        <div style="background: rgba(255, 255, 255, 0.02); padding: 1rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255, 255, 255, 0.05); grid-column: 1 / span 2;">
+                            <span style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Empirical Pass / Fail Distribution</span>
+                            <span style="font-size: 1.5rem; font-weight: 700; font-family: var(--font-heading); color: var(--success);" id="stat-pass-rate">72.4% Pass Rate</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: SAMPLING SIMULATOR -->
+            <section id="section-sampling" class="dashboard-section">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-chart-pie"></i> Interactive Sampling Simulator</h2>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                        This visualizer demonstrates how individual records (colored by target class: <span style="color: var(--success); font-weight: 600;"><i class="fas fa-circle"></i> Pass</span> and <span style="color: var(--danger); font-weight: 600;"><i class="fas fa-circle"></i> Fail</span>) are drawn into the respective training splits. Look at how Stratified Sampling organizes classes proportionally, matching the parent population.
+                    </p>
+
+                    <div class="sampling-viz-container">
+                        <!-- Row 1: Population -->
+                        <div class="viz-row">
+                            <div class="viz-label">
+                                <span>Complete Student Population Pool (Representative Subset N=300)</span>
+                                <span style="color: var(--primary);" id="pop-ratio-lbl">Ratio: ~50% Pass / 50% Fail</span>
+                            </div>
+                            <div class="node-grid" id="pop-viz-grid">
+                                <!-- Colored dots generated in JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Down Indicator -->
+                        <div class="flow-arrow"><i class="fas fa-chevron-down"></i></div>
+
+                        <!-- Row 2: Split Comparisons -->
+                        <div class="sampling-comparisons">
+                            <div class="viz-row">
+                                <div class="viz-label">
+                                    <span>SRSWOR Sample</span>
+                                    <span id="srswor-ratio-lbl" style="color: var(--primary); font-weight: 600;">Distribution: -</span>
+                                </div>
+                                <div class="node-grid" id="srswor-viz-grid" style="max-height: 120px;">
+                                    <!-- Rendered dynamically -->
+                                </div>
+                            </div>
+                            
+                            <div class="viz-row" id="stratified-viz-card">
+                                <div class="viz-label">
+                                    <span>Stratified Sample</span>
+                                    <span id="stratified-ratio-lbl" style="color: var(--secondary); font-weight: 600;">Distribution: -</span>
+                                </div>
+                                
+                                <div class="strata-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 0.5rem;">
+                                    <!-- Stratum 1: Fail -->
+                                    <div style="background: rgba(239, 68, 68, 0.03); border: 1px solid rgba(239, 68, 68, 0.1); border-radius: 8px; padding: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">
+                                            <span>Stratum 1: Fail Class (y=0)</span>
+                                            <span id="strat-fail-taken-lbl" style="color: var(--danger);">Taken: -</span>
+                                        </div>
+                                        <div class="node-grid" id="strat-fail-viz-grid" style="height: 100px; max-height: 100px;">
+                                            <!-- Fail nodes -->
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Stratum 2: Pass -->
+                                    <div style="background: rgba(16, 185, 129, 0.03); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 8px; padding: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">
+                                            <span>Stratum 2: Pass Class (y=1)</span>
+                                            <span id="strat-pass-taken-lbl" style="color: var(--success);">Taken: -</span>
+                                        </div>
+                                        <div class="node-grid" id="strat-pass-viz-grid" style="height: 100px; max-height: 100px;">
+                                            <!-- Pass nodes -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: TRAINING & HYPERPARAMETERS -->
+            <section id="section-training" class="dashboard-section">
+                <div class="glass-card" style="position: relative;">
+                    <!-- Overlay visual loader -->
+                    <div class="training-overlay" id="training-overlay">
+                        <div class="training-loader"></div>
+                        <h3 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 700; margin-bottom: 1.5rem; text-shadow: 0 0 10px rgba(255,255,255,0.1);">Training Pipeline Active</h3>
+                        
+                        <div class="training-steps">
+                            <div class="training-step" id="t-step-1"><i class="far fa-circle"></i> Applying Sampling Engines</div>
+                            <div class="training-step" id="t-step-2"><i class="far fa-circle"></i> Scaling Feature Matrix</div>
+                            <div class="training-step" id="t-step-3"><i class="far fa-circle"></i> Fitting Custom ML Algorithms</div>
+                            <div class="training-step" id="t-step-4"><i class="far fa-circle"></i> Evaluating Test Metrics</div>
+                        </div>
+                    </div>
+
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-sliders-h"></i> Model Configuration & Pipeline Runner</h2>
+                    </div>
+
+                    <div class="section-grid-2" style="grid-template-columns: 1.2fr 0.8fr;">
+                        
+                        <!-- Configuration Form Column -->
+                        <div>
+                            <!-- Model Selection -->
+                            <div class="form-group">
+                                <label for="model-select" class="form-label">Classification Algorithm</label>
+                                <select id="model-select" class="form-select">
+                                    <option value="logistic">Logistic Regression (Linear Classifier)</option>
+                                    <option value="knn">K-Nearest Neighbors (KNN - Lazy Instance-based)</option>
+                                    <option value="tree">Decision Tree Classifier (Non-linear Rule-based)</option>
+                                </select>
+                            </div>
+
+                            <!-- Population Size -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pop-range">Population Size (N)</label>
+                                    <span class="value-bubble" id="pop-val-bubble">1000</span>
+                                </div>
+                                <input type="range" id="pop-range" class="form-range" min="200" max="2000" step="100" value="1000">
+                                <span style="font-size: 0.75rem; color: var(--text-muted); display: block;">Controls the total number of student records simulated.</span>
+                            </div>
+
+                            <!-- Sample Size -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="sample-range">Sample Size (n)</label>
+                                    <span class="value-bubble" id="sample-val-bubble">200</span>
+                                </div>
+                                <input type="range" id="sample-range" class="form-range" min="50" max="500" step="10" value="200">
+                                <span id="lbl-sample-description" style="font-size: 0.75rem; color: var(--text-muted); display: block;">Determines the subset size drawn from the 1,000 population.</span>
+                            </div>
+
+                            <!-- Algorithm Parameters Dynamic Forms -->
+                            <!-- Logistic Regression -->
+                            <div id="logistic-hyperparams" class="hyperparam-box">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div class="form-group">
+                                        <label for="logistic-lr" class="form-label">Learning Rate (α)</label>
+                                        <input type="number" id="logistic-lr" class="form-input" min="0.001" max="1" step="0.01" value="0.1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="logistic-epochs" class="form-label">Training Epochs</label>
+                                        <input type="number" id="logistic-epochs" class="form-input" min="10" max="1000" step="10" value="200">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- KNN -->
+                            <div id="knn-hyperparams" class="hyperparam-box" style="display: none;">
+                                <div class="form-group">
+                                    <label for="knn-k" class="form-label">Neighbors Count (K)</label>
+                                    <input type="number" id="knn-k" class="form-input" min="1" max="21" step="2" value="5">
+                                </div>
+                            </div>
+
+                            <!-- Decision Tree -->
+                            <div id="tree-hyperparams" class="hyperparam-box" style="display: none;">
+                                <div class="form-group">
+                                    <label for="tree-depth" class="form-label">Max Depth</label>
+                                    <input type="number" id="tree-depth" class="form-input" min="1" max="15" step="1" value="5">
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 2rem;">
+                                <button class="btn btn-primary" id="btn-train-model" style="width: 100%; font-size: 1.05rem;">
+                                    <i class="fas fa-play"></i> Train & Evaluate Models
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Technical Explainer Column -->
+                        <div style="background: rgba(255,255,255,0.01); padding: 1.5rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03); display: flex; flex-direction: column; gap: 1rem; justify-content: center;">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--text-primary);"><i class="fas fa-shield-alt"></i> Leakage Protection Hygiene</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                                In order to demonstrate true performance differences, this pipeline applies strict standard standardization limits:
+                            </p>
+                            <ul style="font-size: 0.82rem; color: var(--text-secondary); padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; line-height: 1.5;">
+                                <li><strong>Pre-split Separation:</strong> Train and Test subsets are partitioned immediately following sample generation.</li>
+                                <li><strong>Feature Standardization:</strong> Mean and variance statistics are strictly extracted from the **Training split only** to prevent data leakage.</li>
+                                <li><strong>Hygiene validation:</strong> Testing data and user custom inferences are scaled post-hoc utilizing the training coefficients.</li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: COMPARATIVE RESULTS -->
+            <section id="section-results" class="dashboard-section">
+                <!-- Metrics Comparison Grid cards -->
+                <div class="section-grid-2">
+                    <!-- SRSWOR Card Deck -->
+                    <div class="glass-card" style="border-color: rgba(59, 130, 246, 0.15);">
+                        <div class="card-header">
+                            <h2 class="card-title" style="color: var(--primary);"><i class="fas fa-random"></i> SRSWOR Split</h2>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading);" id="srswor-acc-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Precision</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading);" id="srswor-prec-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Recall</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading);" id="srswor-rec-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">F1-Score</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading);" id="srswor-f1-card">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stratified Card Deck -->
+                    <div class="glass-card" style="border-color: rgba(99, 102, 241, 0.15);">
+                        <div class="card-header">
+                            <h2 class="card-title" style="color: var(--secondary);"><i class="fas fa-layer-group"></i> Stratified Split</h2>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Accuracy</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading); color: var(--secondary);" id="strat-acc-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Precision</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading); color: var(--secondary);" id="strat-prec-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Recall</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading); color: var(--secondary);" id="strat-rec-card">-</span>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: var(--border-radius-sm); text-align: center;">
+                                <span style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">F1-Score</span>
+                                <span style="font-size: 1.8rem; font-weight: 700; font-family: var(--font-heading); color: var(--secondary);" id="strat-f1-card">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-grid-2" style="margin-bottom: 2.5rem;">
+                    <!-- Left: Table comparison -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-percentage"></i> Comparative Metrics Ledger</h2>
+                        </div>
+                        <table class="custom-table" id="comparison-metrics-table" summary="Accuracy, precision, recall, and f1 score comparison between SRSWOR and Stratified sampling models.">
+                            <thead>
+                                <tr>
+                                    <th>Evaluation Metric</th>
+                                    <th>SRSWOR Model</th>
+                                    <th>Stratified Model</th>
+                                    <th>Difference</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Accuracy</strong></td>
+                                    <td id="tbl-srswor-acc">-</td>
+                                    <td id="tbl-strat-acc">-</td>
+                                    <td><span style="color: var(--success); font-weight:600;"><i class="fas fa-long-arrow-alt-up"></i> Comparative</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Precision</strong></td>
+                                    <td id="tbl-srswor-prec">-</td>
+                                    <td id="tbl-strat-prec">-</td>
+                                    <td><span style="color: var(--success); font-weight:600;"><i class="fas fa-long-arrow-alt-up"></i> Dynamic</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Recall</strong></td>
+                                    <td id="tbl-srswor-rec">-</td>
+                                    <td id="tbl-strat-rec">-</td>
+                                    <td><span style="color: var(--success); font-weight:600;"><i class="fas fa-long-arrow-alt-up"></i> Evaluation</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>F1-Score</strong></td>
+                                    <td id="tbl-srswor-f1">-</td>
+                                    <td id="tbl-strat-f1">-</td>
+                                    <td><span style="color: var(--success); font-weight:600;"><i class="fas fa-long-arrow-alt-up"></i> Metrics</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Dynamic Conclusion Box -->
+                        <div class="conclusion-box">
+                            <div class="conclusion-title">
+                                <i class="fas fa-lightbulb"></i> Dynamic Statistical Analysis
+                            </div>
+                            <div class="conclusion-text" id="conclusion-text">
+                                Train models to trigger evaluation routines and produce statistical diagnostics.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Bar Graph -->
+                    <div class="glass-card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fas fa-chart-bar"></i> Performance Metrics Comparison</h2>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="metricsChart" aria-label="Comparative bar chart showing classification metrics across sampling techniques." role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confusion Matrix comparison grid -->
+                <div class="glass-card">
+                    <div class="card-header" style="flex-direction: column; align-items: flex-start; gap: 0.75rem; margin-bottom: 2rem;">
+                        <h2 class="card-title" style="margin-bottom: 0;"><i class="fas fa-th"></i> Confusion Matrix Comparison (Test Split)</h2>
+                        <div id="split-profile-indicator" style="font-size: 0.85rem; color: var(--text-secondary); background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.15); padding: 0.45rem 1rem; border-radius: 6px; display: flex; gap: 1.5rem; font-weight: 500; margin-top: 0.25rem; flex-wrap: wrap;">
+                            <span><i class="fas fa-filter" style="color: var(--primary);"></i> Sample Drawn (n): <strong id="lbl-split-total" style="color: #fff;">-</strong></span>
+                            <span><i class="fas fa-dumbbell" style="color: var(--success);"></i> Training Set (80%): <strong id="lbl-split-train" style="color: #fff;">-</strong> records</span>
+                            <span><i class="fas fa-vial" style="color: var(--warning);"></i> Testing Set (20%): <strong id="lbl-split-test" style="color: #fff;">-</strong> records</span>
+                        </div>
+                    </div>
+                    
+                    <div class="matrices-comparison">
+                        
+                        <!-- SRSWOR Confusion Matrix -->
+                        <div class="confusion-matrix-box">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">SRSWOR Model Matrix</h3>
+                            
+                            <div class="matrix-grid" id="matrix-srswor">
+                                <!-- Row 1 headers -->
+                                <div class="matrix-header left"></div>
+                                <div class="matrix-header">Pred Fail</div>
+                                <div class="matrix-header">Pred Pass</div>
+                                
+                                <!-- Row 2: Actual Fail -->
+                                <div class="matrix-header left">Act Fail</div>
+                                <div class="matrix-cell tn">
+                                    <span class="matrix-cell-val" id="srswor-tn">-</span>
+                                    <span class="matrix-cell-lbl">True Neg (TN)</span>
+                                </div>
+                                <div class="matrix-cell fp">
+                                    <span class="matrix-cell-val" id="srswor-fp">-</span>
+                                    <span class="matrix-cell-lbl">False Pos (FP)</span>
+                                </div>
+                                
+                                <!-- Row 3: Actual Pass -->
+                                <div class="matrix-header left">Act Pass</div>
+                                <div class="matrix-cell fn">
+                                    <span class="matrix-cell-val" id="srswor-fn">-</span>
+                                    <span class="matrix-cell-lbl">False Neg (FN)</span>
+                                </div>
+                                <div class="matrix-cell tp">
+                                    <span class="matrix-cell-val" id="srswor-tp">-</span>
+                                    <span class="matrix-cell-lbl">True Pos (TP)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stratified Confusion Matrix -->
+                        <div class="confusion-matrix-box">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.5rem;">Stratified Model Matrix</h3>
+                            
+                            <div class="matrix-grid" id="matrix-strat">
+                                <!-- Row 1 headers -->
+                                <div class="matrix-header left"></div>
+                                <div class="matrix-header">Pred Fail</div>
+                                <div class="matrix-header">Pred Pass</div>
+                                
+                                <!-- Row 2: Actual Fail -->
+                                <div class="matrix-header left">Act Fail</div>
+                                <div class="matrix-cell tn">
+                                    <span class="matrix-cell-val" id="strat-tn">-</span>
+                                    <span class="matrix-cell-lbl">True Neg (TN)</span>
+                                </div>
+                                <div class="matrix-cell fp">
+                                    <span class="matrix-cell-val" id="strat-fp">-</span>
+                                    <span class="matrix-cell-lbl">False Pos (FP)</span>
+                                </div>
+                                
+                                <!-- Row 3: Actual Pass -->
+                                <div class="matrix-header left">Act Pass</div>
+                                <div class="matrix-cell fn">
+                                    <span class="matrix-cell-val" id="strat-fn">-</span>
+                                    <span class="matrix-cell-lbl">False Neg (FN)</span>
+                                </div>
+                                <div class="matrix-cell tp">
+                                    <span class="matrix-cell-val" id="strat-tp">-</span>
+                                    <span class="matrix-cell-lbl">True Pos (TP)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: INFERENCE SANDBOX -->
+            <section id="section-prediction" class="dashboard-section">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fas fa-magic"></i> Live Performance Predictor & Inference Sandbox</h2>
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem;">
+                        Modify study parameters using the sliders below to simulate a student profile. The sandbox applies the fitted training scalers and queries both trained classifiers in real-time, highlighting predictive differences.
+                    </p>
+
+                    <div class="section-grid-2" style="grid-template-columns: 1fr 1fr;">
+                        
+                        <!-- Inputs Panel -->
+                        <div style="background: rgba(255,255,255,0.01); padding: 1.5rem; border-radius: var(--border-radius-sm); border: 1px solid rgba(255,255,255,0.03);">
+                            
+                            <!-- Study Hours -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-study">Daily Study Hours</label>
+                                    <span class="value-bubble" id="val-study">6 hrs</span>
+                                </div>
+                                <input type="range" id="pred-study" class="form-range" min="1" max="12" step="0.5" value="6">
+                            </div>
+
+                            <!-- Attendance -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-attendance">Class Attendance Percentage</label>
+                                    <span class="value-bubble" id="val-attendance">80%</span>
+                                </div>
+                                <input type="range" id="pred-attendance" class="form-range" min="50" max="100" step="1" value="80">
+                            </div>
+
+                            <!-- Sleep Hours -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-sleep">Average Sleep Hours</label>
+                                    <span class="value-bubble" id="val-sleep">7 hrs</span>
+                                </div>
+                                <input type="range" id="pred-sleep" class="form-range" min="4" max="10" step="0.5" value="7">
+                            </div>
+
+                            <!-- Assignment Scores -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-assignments">Assignments Score</label>
+                                    <span class="value-bubble" id="val-assignments">70%</span>
+                                </div>
+                                <input type="range" id="pred-assignments" class="form-range" min="0" max="100" step="1" value="70">
+                            </div>
+
+                            <!-- Internal Marks -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-internal">Internal Assessment Marks</label>
+                                    <span class="value-bubble" id="val-internal">70%</span>
+                                </div>
+                                <input type="range" id="pred-internal" class="form-range" min="0" max="100" step="1" value="70">
+                            </div>
+
+                            <!-- Active Class Participation -->
+                            <div class="form-group">
+                                <div class="form-label">
+                                    <label for="pred-participation">Classroom Participation (Level)</label>
+                                    <span class="value-bubble" id="val-participation">3/5</span>
+                                </div>
+                                <input type="range" id="pred-participation" class="form-range" min="1" max="5" step="1" value="3">
+                            </div>
+
+                            <!-- Internet Usage -->
+                            <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem; margin-top: 1.5rem;">
+                                <input type="checkbox" id="pred-internet" checked style="width: 18px; height: 18px; cursor: pointer;">
+                                <label for="pred-internet" style="font-size: 0.9rem; font-weight:500; color: var(--text-secondary); cursor: pointer;">Active Home Internet Access</label>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Outputs Panel -->
+                        <div style="display: flex; flex-direction: column; justify-content: center; gap: 1.5rem;">
+                            
+                            <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; text-align: center; color: var(--text-primary); margin-bottom: 0.5rem;">Side-by-Side Model Prediction</h3>
+                            
+                            <!-- SRSWOR Inference -->
+                            <div class="pred-result-card" id="srswor-pred-box">
+                                <span class="pred-label">SRSWOR Model Classification</span>
+                                <span class="pred-outcome" id="srswor-pred-outcome">TRAIN MODEL</span>
+                                <span style="font-size: 0.78rem; text-align: center; color: var(--text-muted);" id="srswor-pred-prob">No trained model available</span>
+                            </div>
+
+                            <!-- Stratified Inference -->
+                            <div class="pred-result-card" id="strat-pred-box">
+                                <span class="pred-label">Stratified Model Classification</span>
+                                <span class="pred-outcome" id="strat-pred-outcome">TRAIN MODEL</span>
+                                <span style="font-size: 0.78rem; text-align: center; color: var(--text-muted);" id="strat-pred-prob">No trained model available</span>
+                            </div>
+
+                            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; line-height: 1.4;">
+                                *Note: When sliders are near high-uncertainty decision thresholds (e.g. 5.5 hours study, 72% attendance), the model fitted on SRSWOR frequently diverges from the Stratified model due to minor class weight biases introduced during sampling.
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+        </main>
+        
+    </div>
+
+    <!-- Core App Logic scripts -->
+    <script src="sampling.js"></script>
+    <script src="ml.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
